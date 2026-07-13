@@ -1,0 +1,21 @@
+.DS_Store
+Thumbs.db
+
+*.mp4
+*.mov
+*.m4v
+*.mkv
+*.webm
+*.avi
+*.mp3
+*.wav
+*.aiff
+*.flac
+
+VIDZ IMPORTS/
+VIDEOS/
+MEDIA/
+EXPORTS/
+
+*.tmp
+*.swp

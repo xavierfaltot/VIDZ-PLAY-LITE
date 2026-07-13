@@ -1,0 +1,1125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#070708">
+<title>VIDZ PLAY LITE</title>
+<style>
+:root {
+  --bg:#070708; --panel:#101114; --panel2:#17181c; --line:#303139;
+  --violet:#985fff; --green:#8bd44b; --orange:#ff8a27;
+  --ink:#f4f1eb; --muted:#8f9199;
+}
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body {
+  margin:0; background:#000; color:var(--ink);
+  font-family:Inter,Arial,sans-serif;
+}
+body { display:flex; justify-content:center; align-items:flex-start; }
+button,label,input,a { font:inherit; }
+button,a,label { touch-action:manipulation; }
+
+#machine {
+  width:min(100%,1080px);
+  padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));
+  background:radial-gradient(circle at 50% -20%,#25262c 0,#111216 34%,#070708 74%);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+#machine::before {
+  content:""; position:absolute; inset:8px; border-radius:28px;
+  border:1px solid #3a3b42;
+  box-shadow:inset 0 0 0 1px #000,inset 0 0 50px #0009;
+  pointer-events:none;
+}
+.screw {
+  position:absolute; width:15px;height:15px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#696a70,#202126 57%,#050506 100%);
+  border:1px solid #050506;
+  box-shadow:inset 0 0 0 1px #3b3c42,0 2px 5px #000; z-index:5;
+}
+.s1{top:17px;left:17px} .s2{top:17px;right:17px}
+.s3{bottom:17px;left:17px} .s4{bottom:17px;right:17px}
+
+.top-row {
+  display:grid; grid-template-columns:minmax(170px,300px) 1fr;
+  gap:16px; position:relative; z-index:2;
+}
+.logo-panel,.video-panel,.mp3-slot,.side-btn {
+  background:linear-gradient(145deg,#16171b,#090a0c);
+  border:1px solid var(--line);
+  box-shadow:0 18px 38px #0009,inset 0 1px 0 #ffffff0a;
+}
+.logo-panel {
+  border-radius:22px; display:grid; place-items:center;
+  padding:16px; min-height:250px;
+}
+.logo { width:100%; max-width:270px; filter:drop-shadow(0 14px 18px #000c); }
+
+.video-panel {
+  position:relative; border-radius:24px; min-height:250px;
+  display:grid; place-items:center; overflow:hidden; cursor:pointer;
+  border-color:#4b3370;
+  box-shadow:0 18px 38px #0009,inset 0 1px 0 #ffffff0a,0 0 22px #985fff20;
+}
+.video-panel::before {
+  content:""; position:absolute; inset:12px; border-radius:18px;
+  border:1px dashed var(--violet);
+  box-shadow:0 0 16px #985fff38 inset,0 0 12px #985fff20;
+}
+#videos { display:none; }
+.video-inner { position:relative; z-index:2; text-align:center; padding:24px; }
+.plus { font-size:62px; color:var(--violet); text-shadow:0 0 20px #985fff; }
+.video-title { font-size:clamp(24px,4vw,42px); font-weight:1000; color:#b47cff; }
+.video-sub { margin-top:7px; color:#9b9ca3; font-size:12px; font-weight:700; }
+.video-format {
+  display:inline-block; margin-top:14px; border:1px solid #6940a6;
+  color:#a875ff; border-radius:999px; padding:5px 10px;
+  font-size:10px; font-weight:900; letter-spacing:1px;
+}
+.video-count { margin-top:10px; color:#d3ff63; font-size:10px; font-weight:900; letter-spacing:1.1px; }
+
+
+.audio-row{
+  display:grid;
+  grid-template-columns:4fr 1fr;
+  gap:12px;
+  position:relative;
+  z-index:2;
+}
+.mic-slot{
+  min-height:96px;
+  border-radius:20px;
+  border:1px solid #70451f;
+  background:linear-gradient(145deg,#16171b,#090a0c);
+  color:var(--orange);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  box-shadow:0 18px 38px #0009,inset 0 1px 0 #ffffff0a,0 0 18px #ff8a271e;
+}
+.mic-slot.active{
+  background:var(--orange);
+  color:#111;
+  border-color:var(--orange);
+  box-shadow:0 0 20px #ff8a2755,inset 0 1px 0 #ffffff30;
+}
+.mic-symbol{
+  width:34px;height:34px;border-radius:50%;
+  border:3px solid currentColor;
+  display:grid;place-items:center;
+  font-size:11px;
+}
+.mic-text{
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:1px;
+}
+
+.mp3-slot {
+  position:relative; z-index:2; min-height:96px; border-radius:20px;
+  border-color:#70451f; display:grid;
+  grid-template-columns:auto minmax(0,1fr) minmax(140px,42%) auto;
+  align-items:center; gap:14px; padding:15px 20px; overflow:hidden; cursor:pointer;
+}
+.mp3-slot::before {
+  content:""; position:absolute; inset:10px; border-radius:13px;
+  border:1px dashed #d97823; opacity:.8;
+}
+#music { display:none; }
+.mp3-icon { position:relative; z-index:2; font-size:34px; color:var(--orange); text-shadow:0 0 13px #ff8a27; }
+.mp3-copy { position:relative; z-index:2; min-width:0; }
+.mp3-title { font-size:20px; font-weight:1000; color:var(--orange); }
+.mp3-sub { margin-top:4px; font-size:10px; color:#999ba3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mp3-line { position:relative; z-index:2; height:12px; border-radius:99px; background:#020203; border:1px solid #33343a; box-shadow:inset 0 2px 6px #000; }
+.mp3-badge { position:relative; z-index:2; color:#8f542a; font-size:22px; font-weight:1000; }
+
+.controls {
+  display:grid; grid-template-columns:1fr minmax(180px,240px) 1fr;
+  align-items:center; gap:16px; position:relative; z-index:2;
+}
+.side-btn {
+  min-height:148px; border-radius:22px; color:var(--ink); text-decoration:none;
+  display:flex; align-items:center; justify-content:center; gap:16px; padding:18px;
+  transition:transform .08s ease,box-shadow .08s ease;
+}
+.side-btn:active { transform:translateY(4px); box-shadow:0 7px 16px #0009,inset 0 2px 8px #0008; }
+.side-icon { flex:0 0 auto; width:70px;height:70px;border-radius:50%; display:grid;place-items:center; font-size:34px;font-weight:1000; }
+.side-copy { display:flex; flex-direction:column; gap:8px; }
+.side-main { font-size:24px; font-weight:1000; }
+.side-sub { font-size:10px; line-height:1.35; color:#96979d; letter-spacing:.7px; }
+.info { border-color:#3b6d33; color:var(--green); }
+.info .side-icon { border:3px solid var(--green); box-shadow:0 0 18px #8bd44b55; }
+.download { border-color:#70451f; color:var(--orange); }
+.download .side-icon { border:3px solid var(--orange); box-shadow:0 0 18px #ff8a2755; }
+
+.play-wrap { display:grid; place-items:center; }
+.play-knob {
+  width:205px; aspect-ratio:1; border-radius:50%; border:1px solid #5d5e63;
+  position:relative; display:grid; place-items:center;
+  background:radial-gradient(circle at 38% 30%,#beb9af 0,#726d64 18%,#35332f 48%,#151515 75%);
+  box-shadow:0 24px 36px #000d,inset 0 5px 7px #ffffff2e,inset 0 -18px 28px #000d,0 0 0 10px #131417,0 0 0 12px #5b3c2f;
+  transition:transform .08s ease;
+}
+.play-knob::before {
+  content:""; position:absolute; inset:-18px; border-radius:50%; border:8px solid #3f3f42;
+  box-shadow:inset 0 0 0 2px #1c1c1e,inset 0 0 0 4px #72716d,0 0 0 2px #000;
+}
+.play-knob::after {
+  content:""; position:absolute; inset:13px; border-radius:50%; border:2px solid #ff9a42;
+  box-shadow:0 0 12px #ff8a2766,inset 0 0 10px #0008;
+}
+.play-knob:active { transform:translateY(6px) scale(.985); }
+.play-knob:disabled { opacity:.3; }
+.triangle {
+  position:relative; z-index:3; width:0;height:0;
+  border-top:34px solid transparent; border-bottom:34px solid transparent;
+  border-left:56px solid #111; margin-left:12px; filter:drop-shadow(0 2px 1px #aaa);
+}
+
+/* Preview / fullscreen */
+#stage {
+  position:fixed; inset:0; background:#000; display:none; z-index:1000; overflow:hidden;
+}
+#stage.show { display:block; }
+#mixCanvas { position:absolute; inset:0; width:100%; height:100%; background:#000; }
+#analysisCanvas{display:none}
+#whiteFlash{
+  position:absolute;
+  inset:0;
+  z-index:8;
+  background:#fff;
+  opacity:0;
+  pointer-events:none;
+  mix-blend-mode:screen;
+}
+#whiteFlash.hit{
+  animation:whiteHit .11s ease-out;
+}
+@keyframes whiteHit{
+  0%{opacity:.72}
+  100%{opacity:0}
+}
+#videoA,#videoB { position:absolute; width:1px;height:1px;opacity:.001;pointer-events:none; }
+#previewOverlay {
+  position:absolute; inset:0; z-index:20;
+  display:flex; align-items:flex-end; justify-content:center; gap:10px;
+  flex-wrap:wrap;
+  padding:0 12px max(16px,env(safe-area-inset-bottom));
+  pointer-events:none;
+}
+#fxBadge{
+  position:absolute;
+  top:max(14px,env(safe-area-inset-top));
+  right:14px;
+  padding:8px 11px;
+  border-radius:999px;
+  color:#fff;
+  background:#0008;
+  border:1px solid #ffffff35;
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:1px;
+  backdrop-filter:blur(8px);
+}
+#watermark {
+  position:absolute; top:max(14px,env(safe-area-inset-top)); left:50%;
+  transform:translateX(-50%);
+  padding:8px 12px; border-radius:999px;
+  color:#fff; background:#0008; border:1px solid #ffffff35;
+  font-size:10px; font-weight:1000; letter-spacing:1.7px;
+  backdrop-filter:blur(8px);
+}
+.preview-btn {
+  pointer-events:auto; border:1px solid #ffffff50; background:#090909d9;
+  color:#fff; border-radius:12px; padding:13px 16px; font-weight:1000;
+  backdrop-filter:blur(8px);
+}
+.preview-btn.primary { border-color:var(--orange); box-shadow:0 0 14px #ff8a2744; }
+#screenTap { position:absolute; inset:0; z-index:10; border:0; background:transparent; display:none; }
+#stage.clean #previewOverlay { display:none; }
+#stage.clean #screenTap { display:block; }
+.mic-modal{
+  position:fixed;
+  inset:0;
+  z-index:2000;
+  display:none;
+  place-items:center;
+  background:#000c;
+  padding:20px;
+}
+.mic-modal.show{display:grid}
+.mic-card{
+  width:min(100%,420px);
+  border:1px solid #70451f;
+  border-radius:24px;
+  background:linear-gradient(145deg,#17181d,#090a0c);
+  padding:24px;
+  text-align:center;
+  box-shadow:0 24px 70px #000,0 0 24px #ff8a2722;
+}
+.mic-card-icon{
+  width:66px;height:66px;border-radius:50%;
+  border:3px solid var(--orange);
+  color:var(--orange);
+  display:grid;place-items:center;
+  margin:0 auto 16px;
+  box-shadow:0 0 18px #ff8a2755;
+}
+.mic-card h2{margin:0 0 10px;font-size:22px}
+.mic-card p{margin:0;color:#aaa;line-height:1.5;font-size:12px}
+.mic-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.mic-actions button{
+  border:1px solid #3a3b42;
+  border-radius:12px;
+  padding:13px 10px;
+  background:#111216;
+  color:#fff;
+  font-weight:1000;
+}
+#micAllow{border-color:var(--orange);color:var(--orange)}
+
+
+@media(max-width:760px) {
+  #machine { gap:10px; }
+  .top-row { grid-template-columns:120px 1fr; gap:10px; }
+  .logo-panel,.video-panel { min-height:185px; }
+  .logo-panel { padding:9px; }
+  .video-title { font-size:22px; }
+  .video-sub { font-size:9px; }
+  .audio-row { grid-template-columns:4fr 1fr; gap:8px; }
+  .mp3-slot { grid-template-columns:auto minmax(0,1fr) auto; min-height:82px; padding:12px 14px; }
+  .mic-slot { min-height:82px; border-radius:16px; }
+  .mp3-line { display:none; }
+  .controls { grid-template-columns:1fr 1.05fr 1fr; gap:8px; }
+  .side-btn { min-height:122px; flex-direction:column; gap:7px; padding:10px 6px; text-align:center; }
+  .side-icon { width:52px;height:52px;font-size:25px; }
+  .side-main { font-size:15px; }
+  .side-sub { font-size:8px; }
+  .play-knob { width:128px; }
+}
+</style>
+</head>
+<body>
+<main id="machine">
+  <span class="screw s1"></span><span class="screw s2"></span>
+  <span class="screw s3"></span><span class="screw s4"></span>
+
+  <div class="top-row">
+    <div class="logo-panel">
+      <img class="logo" src="./assets/vidz-play-lite-logo.png" alt="VIDZ PLAY LITE">
+    </div>
+
+    <label class="video-panel">
+      <input id="videos" type="file" accept="video/*" multiple webkitdirectory directory>
+      <div class="video-inner">
+        <div class="plus">＋</div>
+        <div class="video-title">ADD VIDEO(S)</div>
+        <div class="video-sub">DRAG & DROP OR TAP TO UPLOAD</div>
+        <div class="video-format">MP4 / MOV / AVI</div>
+        <div id="videoCount" class="video-count">EMPTY</div>
+      </div>
+    </label>
+  </div>
+
+  <div class="audio-row">
+    <label class="mp3-slot">
+      <input id="music" type="file" accept="audio/*">
+      <div class="mp3-icon">♫</div>
+      <div class="mp3-copy">
+        <div class="mp3-title">UPLOAD MP3</div>
+        <div id="audioStatus" class="mp3-sub">DRAG & DROP OR TAP TO UPLOAD</div>
+      </div>
+      <div class="mp3-line"></div>
+      <div class="mp3-badge">MP3</div>
+    </label>
+
+    <button id="micBtn" class="mic-slot" aria-label="Microphone">
+      <span class="mic-symbol">●</span>
+      <span class="mic-text">MIC</span>
+    </button>
+  </div>
+
+  <div class="controls">
+    <button id="infoBtn" class="side-btn info">
+      <span class="side-icon">i</span>
+      <span class="side-copy">
+        <span class="side-main">LITE VERSION</span>
+        <span class="side-sub">LOCAL VIDEO<br>PLAYBACK</span>
+      </span>
+    </button>
+
+    <div class="play-wrap">
+      <button id="playBtn" class="play-knob" disabled aria-label="Play">
+        <span class="triangle"></span>
+      </button>
+    </div>
+
+    <a class="side-btn download" href="mailto:xavier.faltot@gmail.com?subject=VIDZ%20PLAY%20LITE%20%E2%80%94%20Full%20version%20request&body=Hello%2C%0A%0AI%20would%20like%20more%20information%20about%20the%20full%20version%20of%20VIDZ%20PLAY.%0A%0ABest%2C">
+      <span class="side-icon">+</span>
+      <span class="side-copy">
+        <span class="side-main">FULL VERSION</span>
+        <span class="side-sub">AVAILABLE<br>ON DEMAND</span>
+      </span>
+    </a>
+  </div>
+</main>
+
+<section id="stage">
+  <canvas id="mixCanvas"></canvas><canvas id="analysisCanvas" width="32" height="18"></canvas><div id="whiteFlash"></div>
+  <video id="videoA" muted playsinline preload="auto"></video>
+  <video id="videoB" muted playsinline preload="auto"></video>
+  <audio id="audio" loop preload="metadata"></audio>
+
+  <div id="previewOverlay">
+    <div id="watermark">VIDZ PLAY LITE · LITE VERSION</div><div id="fxBadge" title="Smart tags · scene-cut detection · long-form holds · hue · contrast · invert · mirror · zoom · pulse · multiply · overlay · difference · darken · flash · split · crop">SMART MIX: TAGS · CUTS · FX</div>
+    <button id="backConsoleBtn" class="preview-btn">BACK TO CONSOLE</button>
+    <button id="fxToggleBtn" class="preview-btn primary">FX ON</button>
+    <button id="doubleBtn" class="preview-btn">DOUBLE SCREEN</button>
+    <button id="fullBtn" class="preview-btn primary">FULL SCREEN</button>
+  </div>
+  <button id="screenTap" aria-label="Exit fullscreen"></button>
+</section>
+
+<div id="micModal" class="mic-modal">
+  <div class="mic-card">
+    <div class="mic-card-icon">●</div>
+    <h2>ALLOW MICROPHONE?</h2>
+    <p>VIDZ PLAY LITE will listen to the music around you to influence cuts, fades and effects. Audio is processed locally and is not uploaded.</p>
+    <div class="mic-actions">
+      <button id="micCancel">NOT NOW</button>
+      <button id="micAllow">ALLOW MIC</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const videosInput=$('#videos'), musicInput=$('#music');
+const A=$('#videoA'), B=$('#videoB'), audio=$('#audio');
+const stage=$('#stage'), canvas=$('#mixCanvas'), ctx=canvas.getContext('2d',{alpha:false});
+
+let files=[], urls=[], order=[], used=new Set(), front=0, back=-1;
+let libraryMeta=[], activeTag=null, tagRunRemaining=0;
+let nextAutoCutAt=0, lastSceneSignature=null, lastSceneCut=0;
+let sceneTimer=null, longHoldBias=1;
+let active=A, standby=B, activeIndex=-1, standbyIndex=-1;
+let timer=null, switching=false, audioUrl=null, wakeLock=null;
+let layout='single', orientation='portrait', cross=0, transitionStart=0, transitioning=false;
+let doubleReplaceDeck='A';
+let micEnabled=false;
+let micStream=null,micCtx=null,micAnalyser=null,micRAF=null;
+let currentFx='none', currentBlend='source-over', fxAmount=.35, effectStep=0;
+let fxEnabled=true;
+let pulseAmount=0, zoomAmount=1, lastWhiteFlash=0;
+const fxModes=['none','hue','contrast','invert','mirror','zoom','pulse'];
+const blendModes=['source-over','multiply','overlay','difference','darken'];
+let renderRAF=null, lastTap=0;
+const positions=new Map();
+const completedVideos=new Set();
+const editPoints=new Map();
+const loopStates=new Map();
+let lastScratchAt=0;
+
+function haptic(ms=20){ if(navigator.vibrate) navigator.vibrate(ms); }
+
+function normalizeTagToken(token){
+  return token
+    .toLowerCase()
+    .replace(/\.[a-z0-9]+$/,'')
+    .replace(/[^a-z0-9à-ÿ_-]+/g,'')
+    .trim();
+}
+function tagsFromName(name){
+  const base=name.replace(/\.[^.]+$/,'');
+  const tokens=base
+    .split(/[\s_\-\.]+/)
+    .map(normalizeTagToken)
+    .filter(t=>t && t.length>1 && !/^\d+$/.test(t));
+
+  // Keep useful semantic-looking tokens, max 6.
+  return [...new Set(tokens)].slice(0,6);
+}
+function buildLibraryMeta(){
+  libraryMeta=files.map((file,index)=>({
+    index,
+    name:file.name,
+    tags:tagsFromName(file.name),
+    duration:0,
+    internalCuts:0,
+    lastPlayedAt:0
+  }));
+}
+function metaFor(index){
+  return libraryMeta[index] || {index,tags:[],duration:0,internalCuts:0,lastPlayedAt:0};
+}
+function unusedIndices(){
+  return order.filter(i=>!used.has(i));
+}
+function chooseUnusedByTag(tag,exclude=-1){
+  if(!tag) return -1;
+  const candidates=unusedIndices().filter(i=>i!==exclude && metaFor(i).tags.includes(tag));
+  if(!candidates.length) return -1;
+  return candidates[Math.floor(Math.random()*candidates.length)];
+}
+function chooseNextSmart(exclude=-1){
+  if(used.size>=order.length) resetCycle();
+
+  // Continue a short thematic run sometimes.
+  if(activeTag && tagRunRemaining>0){
+    const tagged=chooseUnusedByTag(activeTag,exclude);
+    if(tagged>=0){
+      used.add(tagged);
+      tagRunRemaining--;
+      return tagged;
+    }
+    tagRunRemaining=0;
+    activeTag=null;
+  }
+
+  const pool=unusedIndices().filter(i=>i!==exclude);
+  if(!pool.length){
+    resetCycle();
+    return chooseNextSmart(exclude);
+  }
+
+  let chosen=pool[Math.floor(Math.random()*pool.length)];
+  const tags=metaFor(chosen).tags;
+
+  // Roughly 35% of the time, begin a run of 2–4 clips sharing a tag.
+  if(tags.length && Math.random()<0.35){
+    activeTag=tags[Math.floor(Math.random()*tags.length)];
+    tagRunRemaining=1+Math.floor(Math.random()*3);
+  } else {
+    activeTag=null;
+    tagRunRemaining=0;
+  }
+
+  used.add(chosen);
+  return chosen;
+}
+function computeHoldMs(index,video){
+  const meta=metaFor(index);
+  const duration=Number.isFinite(video.duration)?video.duration:meta.duration||0;
+  const cuts=meta.internalCuts||0;
+
+  let minMs=1800;
+  let maxMs=4800;
+
+  if(duration>0 && duration<10){
+    minMs=Math.max(1200,duration*600);
+    maxMs=Math.max(minMs,duration*950);
+  }else if(duration<30){
+    minMs=3500;
+    maxMs=8500;
+  }else if(duration<60){
+    minMs=6500;
+    maxMs=15000;
+  }else if(duration<180){
+    minMs=12000;
+    maxMs=30000;
+  }else if(duration<600){
+    minMs=20000;
+    maxMs=45000;
+  }else{
+    minMs=30000;
+    maxMs=90000;
+  }
+
+  // Richly edited sources deserve more time because internal cuts already create rhythm.
+  if(cuts>=3) maxMs*=1.2;
+  if(cuts>=8) maxMs*=1.45;
+  if(cuts>=16) maxMs*=1.7;
+
+  // Very static sources can move on sooner.
+  if(cuts===0 && duration>30){
+    minMs*=0.75;
+    maxMs*=0.82;
+  }
+
+  // Occasional long breathing moments.
+  if(duration>=60 && Math.random()<0.35){
+    return Math.round(maxMs);
+  }
+
+  const result=minMs+Math.random()*(maxMs-minMs);
+  return Math.round(Math.max(1200,result));
+}
+function shuffle(list){
+  const a=[...list];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function resetCycle(){
+  order=shuffle([...Array(files.length).keys()]);
+  used.clear();
+  front=0;
+  back=order.length-1;
+  activeTag=null;
+  tagRunRemaining=0;
+}
+function takeFront(){
+  if(used.size>=order.length) resetCycle();
+  while(front<order.length && used.has(order[front])) front++;
+  if(front>=order.length) resetCycle();
+  const i=order[front++]; used.add(i); return i;
+}
+function takeBack(){
+  if(used.size>=order.length) resetCycle();
+  while(back>=0 && used.has(order[back])) back--;
+  if(back<0){ resetCycle(); back=order.length-1; }
+  const i=order[back--]; used.add(i); return i;
+}
+function savePosition(video){
+  if(!video.src || !Number.isFinite(video.currentTime)) return;
+
+  const index=Number(video.dataset.index||-1);
+  const duration=Number.isFinite(video.duration)?video.duration:0;
+  const current=Math.max(0,video.currentTime);
+
+  if(duration>0 && current>=duration-.35){
+    completedVideos.add(index);
+    positions.set(video.src,0);
+  }else{
+    positions.set(video.src,current);
+  }
+}
+function load(video,index){
+  const url=urls[index];
+  return new Promise(resolve=>{
+    const ready=()=>{
+      video.removeEventListener('loadedmetadata',ready);
+      const saved=positions.get(url)||0;
+      const d=Number.isFinite(video.duration)?video.duration:0;
+      try{ video.currentTime=(d && saved>=d-.3)?0:saved; }catch(e){}
+      video.dataset.index=String(index);
+      if(libraryMeta[index]){
+        libraryMeta[index].duration=Number.isFinite(video.duration)?video.duration:0;
+      }
+      resolve();
+    };
+    video.addEventListener('loadedmetadata',ready);
+    video.src=url; video.load();
+  });
+}
+function resizeCanvas(force=false){
+  const width=Math.round(window.innerWidth);
+  const height=Math.round(window.innerHeight);
+  const nextOrientation=width>height?'landscape':'portrait';
+
+  if(!force && canvas.dataset.orientation===nextOrientation) return;
+
+  orientation=nextOrientation;
+  canvas.dataset.orientation=orientation;
+
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  canvas.width=Math.max(2,Math.round(width*dpr));
+  canvas.height=Math.max(2,Math.round(height*dpr));
+}
+function filterString(){
+  if(!fxEnabled)return 'none';
+  const a=fxAmount;
+  if(currentFx==='hue')return `hue-rotate(${(effectStep*67)%360}deg) saturate(${1.55+a*.85}) contrast(${1.22+a*.35}) brightness(.91)`;
+  if(currentFx==='contrast')return `contrast(${1.28+a*1.45}) saturate(${1.3+a*.85}) brightness(.92)`;
+  if(currentFx==='invert')return `invert(${a*.58}) contrast(1.34) saturate(1.5) brightness(.88)`;
+  return `contrast(1.22) saturate(1.28) brightness(.90)`;
+}
+function drawCover(video,box,alpha=1,blend='source-over'){
+  if(video.readyState<2) return;
+  const bx=Math.floor(box.x),by=Math.floor(box.y),bw=Math.ceil(box.w),bh=Math.ceil(box.h);
+  const vw=video.videoWidth||1,vh=video.videoHeight||1;
+  const scale=Math.max(bw/vw,bh/vh);
+  let dw=vw*scale,dh=vh*scale;
+  let localZoom=1;
+
+  if(fxEnabled && currentFx==='zoom') localZoom=1.05+fxAmount*.12;
+  if(fxEnabled && currentFx==='pulse') localZoom=1+pulseAmount*.045;
+
+  dw*=localZoom;
+  dh*=localZoom;
+  const dx=bx+(bw-dw)/2,dy=by+(bh-dh)/2;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(bx,by,bw,bh);
+  ctx.clip();
+  ctx.globalAlpha=Math.max(.92,alpha);
+  ctx.globalCompositeOperation=fxEnabled?blend:'source-over';
+  ctx.filter=filterString();
+
+  if(fxEnabled && currentFx==='mirror'){
+    ctx.translate(bx*2+bw,0);
+    ctx.scale(-1,1);
+  }
+
+  ctx.drawImage(video,dx,dy,dw,dh);
+  ctx.restore();
+}
+function render(t){
+  const w=canvas.width,h=canvas.height;
+  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+
+  if(layout==='single'){
+    drawCover(active,{x:0,y:0,w,h},1,'source-over');
+    if(cross>.48) drawCover(standby,{x:0,y:0,w,h},1,currentBlend);
+  } else {
+    if(orientation==='portrait'){
+      const half=Math.ceil(h/2);
+      drawCover(A,{x:0,y:0,w:w,h:half+1},1,'source-over');
+      drawCover(B,{x:0,y:half-1,w:w,h:h-half+1},1,'source-over');
+    } else {
+      const half=Math.ceil(w/2);
+      drawCover(A,{x:0,y:0,w:half+1,h:h},1,'source-over');
+      drawCover(B,{x:half-1,y:0,w:w-half+1,h:h},1,'source-over');
+    }
+  }
+
+  if(fxEnabled) pulseAmount*=.9;
+  else pulseAmount=0;
+  maintainLoops();
+  if(transitioning){
+    const p=Math.min(1,(t-transitionStart)/180);
+    cross=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+    if(p>=1){
+      transitioning=false;
+      active.pause();
+      [active,standby]=[standby,active];
+      [activeIndex,standbyIndex]=[standbyIndex,activeIndex];
+      cross=0;
+      schedule();
+    }
+  }
+  renderRAF=requestAnimationFrame(render);
+}
+function fireWhiteFlash(force=false){
+  if(!fxEnabled)return;
+  const now=performance.now();
+  if(!force && now-lastWhiteFlash<1800) return;
+  lastWhiteFlash=now;
+  const el=$('#whiteFlash');
+  el.classList.remove('hit');
+  void el.offsetWidth;
+  el.classList.add('hit');
+}
+function evolveEffects(){
+  if(!fxEnabled){
+    currentFx='none';
+    currentBlend='source-over';
+    fxAmount=0;
+    $('#fxBadge').textContent='FX: OFF';
+    return;
+  }
+  effectStep++;
+  currentFx=fxModes[Math.floor(Math.random()*fxModes.length)];
+  currentBlend=blendModes[Math.floor(Math.random()*blendModes.length)];
+  fxAmount=.18+Math.random()*.42;
+  pulseAmount=1;
+
+  if(Math.random()>.9) fireWhiteFlash();
+  $('#fxBadge').textContent=`FX: ${currentFx.toUpperCase()} · ${currentBlend.toUpperCase()}`;
+}
+
+function scratchVideo(video){
+  const now=performance.now();
+  if(now-lastScratchAt<1800 || video.readyState<1) return;
+  lastScratchAt=now;
+
+  const idx=Number(video.dataset.index||-1);
+  const points=editPoints.get(idx)||[];
+  let target=0;
+
+  if(points.length && Math.random()<.72){
+    const candidates=points.filter(p=>p<video.currentTime-.4);
+    if(candidates.length){
+      target=candidates[Math.floor(Math.random()*candidates.length)];
+    }
+  }
+
+  try{
+    video.currentTime=Math.max(0,target);
+    video.play().catch(()=>{});
+  }catch(e){}
+  pulseAmount=1;
+  evolveEffects();
+}
+function maybeScratch(){
+  if(Math.random()<(active?.duration>=60?.06:.12)){
+    const target=layout==='double'
+      ? (Math.random()<.5?A:B)
+      : active;
+    scratchVideo(target);
+  }
+}
+function maybeCreateLoop(video){
+  if(video.readyState<1 || !Number.isFinite(video.duration) || video.duration<3) return;
+  if(Math.random()>(video.duration>=60?.08:.16)) return;
+
+  const idx=Number(video.dataset.index||-1);
+  const points=editPoints.get(idx)||[];
+  const now=video.currentTime||0;
+
+  let start=Math.max(0,now-.8);
+  if(points.length){
+    const before=points.filter(p=>p<=now);
+    if(before.length)start=before[before.length-1];
+  }
+
+  const maxLen=Math.min(2.4,Math.max(.45,video.duration-start-.1));
+  const len=.45+Math.random()*Math.max(.1,maxLen-.45);
+
+  loopStates.set(video,{
+    start,
+    end:Math.min(video.duration-.05,start+len),
+    remaining:1+Math.floor(Math.random()*3)
+  });
+}
+function maintainLoops(){
+  for(const video of [A,B]){
+    const loop=loopStates.get(video);
+    if(!loop)continue;
+
+    if(video.currentTime>=loop.end){
+      if(loop.remaining>0){
+        loop.remaining--;
+        try{video.currentTime=loop.start}catch(e){}
+        video.play().catch(()=>{});
+        pulseAmount=1;
+      }else{
+        loopStates.delete(video);
+      }
+    }
+  }
+}
+
+function schedule(){
+  pulseAmount=1;
+  if(Math.random()>.96)fireWhiteFlash();
+  maybeScratch();
+  if(Math.random()<.18)maybeCreateLoop(layout==='double'?(Math.random()<.5?A:B):active);
+  clearTimeout(timer);
+
+  const currentIndex=Number(active.dataset.index||0);
+  const hold=computeHoldMs(currentIndex,active);
+  nextAutoCutAt=performance.now()+hold;
+  timer=setTimeout(()=>mixNext(),hold);
+}
+async function mixNext(){
+  if(switching||files.length<2) return;
+  switching=true;
+
+  if(layout==='double'){
+    const target=doubleReplaceDeck==='A'?A:B;
+    savePosition(target);
+
+    const otherIndex=Number((target===A?B:A).dataset.index||-1);
+    const idx=chooseNextSmart(otherIndex);
+    evolveEffects();
+    await load(target,idx);
+    try{await target.play();}catch(e){}
+
+    if(A.paused){try{await A.play();}catch(e){}}
+    if(B.paused){try{await B.play();}catch(e){}}
+
+    doubleReplaceDeck=doubleReplaceDeck==='A'?'B':'A';
+    switching=false;
+    schedule();
+    return;
+  }
+
+  savePosition(active);
+  const idx=chooseNextSmart(Number(active.dataset.index||-1));
+  evolveEffects();
+  standbyIndex=idx;
+  await load(standby,idx);
+  try{await standby.play();}catch(e){}
+  transitionStart=performance.now();
+  transitioning=true;
+  setTimeout(()=>switching=false,420);
+}
+
+const analysisCanvas=$('#analysisCanvas');
+const analysisCtx=analysisCanvas.getContext('2d',{willReadFrequently:true});
+
+function sceneSignature(video){
+  if(video.readyState<2) return null;
+  try{
+    analysisCtx.drawImage(video,0,0,analysisCanvas.width,analysisCanvas.height);
+    const data=analysisCtx.getImageData(0,0,analysisCanvas.width,analysisCanvas.height).data;
+    let luma=0,contrast=0,edges=0,count=0;
+    let prev=0;
+    for(let i=0;i<data.length;i+=16){
+      const y=.2126*data[i]+.7152*data[i+1]+.0722*data[i+2];
+      luma+=y;
+      contrast+=Math.abs(y-128);
+      edges+=Math.abs(y-prev);
+      prev=y;
+      count++;
+    }
+    return {
+      luma:luma/Math.max(1,count),
+      contrast:contrast/Math.max(1,count),
+      edges:edges/Math.max(1,count)
+    };
+  }catch(e){
+    return null;
+  }
+}
+function detectInternalSceneCut(){
+  if(!stage.classList.contains('show')) return;
+  const video=layout==='double'?(doubleReplaceDeck==='A'?B:A):active;
+  const sig=sceneSignature(video);
+  if(!sig) return;
+
+  const now=performance.now();
+  if(lastSceneSignature){
+    const delta=
+      Math.abs(sig.luma-lastSceneSignature.luma)*.45+
+      Math.abs(sig.contrast-lastSceneSignature.contrast)*.8+
+      Math.abs(sig.edges-lastSceneSignature.edges)*.7;
+
+    if(delta>22 && now-lastSceneCut>650){
+      lastSceneCut=now;
+      const idx=Number(video.dataset.index||-1);
+      if(idx>=0 && libraryMeta[idx]){
+        libraryMeta[idx].internalCuts++;
+        const points=editPoints.get(idx)||[];
+        const t=video.currentTime||0;
+        if(!points.some(p=>Math.abs(p-t)<.6)){
+          points.push(t);
+          points.sort((a,b)=>a-b);
+          editPoints.set(idx,points.slice(-24));
+        }
+      }
+
+      // Treat a scene cut like a new edit point, but do not switch source.
+      pulseAmount=1;
+      if(Math.random()<.45)evolveEffects();
+      if(Math.random()<.12)fireWhiteFlash();
+      if(Math.random()<.2)maybeCreateLoop(video);
+      if(Math.random()<.1)scratchVideo(video);
+
+      // Let rich, internally edited clips breathe longer.
+      const remaining=nextAutoCutAt-now;
+      if(remaining<900){
+        clearTimeout(timer);
+        const extension=1800+Math.random()*5200;
+        nextAutoCutAt=now+extension;
+        timer=setTimeout(()=>mixNext(),extension);
+      }
+    }
+  }
+  lastSceneSignature=sig;
+}
+function startSceneAnalysis(){
+  clearInterval(sceneTimer);
+  lastSceneSignature=null;
+  sceneTimer=setInterval(detectInternalSceneCut,220);
+}
+function stopSceneAnalysis(){
+  clearInterval(sceneTimer);
+  sceneTimer=null;
+  lastSceneSignature=null;
+}
+
+async function requestWakeLock(){
+  try{if('wakeLock' in navigator) wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
+}
+async function releaseWakeLock(){
+  try{if(wakeLock) await wakeLock.release();}catch(e){}
+  wakeLock=null;
+}
+async function start(){
+  if(!files.length) return;
+  haptic(35);
+  stage.classList.add('show');
+  stage.classList.remove('clean');
+  resizeCanvas(true);
+  await requestWakeLock();
+
+  resetCycle();
+  active=A; standby=B;
+  activeIndex=order[0];
+  standbyIndex=files.length>1?order[order.length-1]:activeIndex;
+  used.add(activeIndex);
+  used.add(standbyIndex);
+  await load(active,activeIndex);
+  if(files.length>1) await load(standby,standbyIndex);
+  try{await active.play();}catch(e){}
+  if(files.length>1){
+    try{await standby.play();}catch(e){}
+  }
+
+  if(audio.src){
+    audio.muted=false; audio.volume=1;
+    try{await audio.play();}catch(e){}
+  }
+
+  if(!renderRAF) renderRAF=requestAnimationFrame(render);
+  startSceneAnalysis();
+  schedule();
+}
+async function exitPreview(){
+  savePosition(A);savePosition(B);
+  loopStates.clear();
+  clearTimeout(timer);
+  active.pause();standby.pause();audio.pause();
+  await releaseWakeLock();
+  await stopMic();
+  stopSceneAnalysis();
+  stage.classList.remove('show','clean');
+}
+async function leaveFullscreen(){
+  if(document.fullscreenElement){
+    try{await document.exitFullscreen();}catch(e){}
+  }
+  stage.classList.remove('clean');
+}
+
+videosInput.addEventListener('change',()=>{
+  files=[...videosInput.files].filter(f=>f.type.startsWith('video/'));
+  urls.forEach(URL.revokeObjectURL);
+  urls=files.map(f=>URL.createObjectURL(f));
+  positions.clear();
+  completedVideos.clear();
+  editPoints.clear();
+  loopStates.clear();
+  buildLibraryMeta();
+  $('#videoCount').textContent=files.length?`${files.length} VIDEOS READY`:'EMPTY';
+  $('#playBtn').disabled=!files.length;
+  haptic(25);
+});
+musicInput.addEventListener('change',()=>{
+  if(audioUrl) URL.revokeObjectURL(audioUrl);
+  const f=musicInput.files[0];
+  if(f){
+    audioUrl=URL.createObjectURL(f);
+    audio.src=audioUrl;
+    $('#audioStatus').textContent=f.name;
+    haptic(20);
+  }
+});
+$('#playBtn').addEventListener('click',start);
+
+async function stopMic(){
+  if(micRAF)cancelAnimationFrame(micRAF);
+  micRAF=null;
+  if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null}
+  if(micCtx){try{await micCtx.close()}catch(e){}micCtx=null}
+}
+async function startMic(){
+  try{
+    micStream=await navigator.mediaDevices.getUserMedia({
+      audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}
+    });
+    micCtx=new (window.AudioContext||window.webkitAudioContext)();
+    micAnalyser=micCtx.createAnalyser();
+    micAnalyser.fftSize=256;
+    micAnalyser.smoothingTimeConstant=.3;
+    micCtx.createMediaStreamSource(micStream).connect(micAnalyser);
+
+    micEnabled=true;
+    $('#micBtn').classList.add('active');
+    $('#micModal').classList.remove('show');
+
+    const data=new Uint8Array(micAnalyser.frequencyBinCount);
+    let avg=0,lastHit=0;
+    const loop=()=>{
+      micAnalyser.getByteFrequencyData(data);
+      let e=0;
+      for(let i=2;i<36;i++)e+=data[i];
+      e/=34;
+      avg=avg?avg*.94+e*.06:e;
+      const now=performance.now();
+      if(e>Math.max(26,avg*1.2)&&now-lastHit>320){
+        lastHit=now;
+        pulseAmount=1;
+        if(Math.random()>.9)fireWhiteFlash();
+        if(Math.random()>.45)evolveEffects();
+        if(Math.random()>.55)mixNext();
+      }
+      micRAF=requestAnimationFrame(loop);
+    };
+    loop();
+  }catch(e){
+    $('#micModal').classList.remove('show');
+    micEnabled=false;
+    $('#micBtn').classList.remove('active');
+  }
+}
+$('#micCancel').addEventListener('click',()=>$('#micModal').classList.remove('show'));
+$('#micAllow').addEventListener('click',startMic);
+
+$('#micBtn').addEventListener('click',()=>{$('#micModal').classList.add('show')});
+$('#infoBtn').addEventListener('click',()=>{
+  const subject=encodeURIComponent('VIDZ PLAY LITE — Full version request');
+  const body=encodeURIComponent('Hello,\n\nI would like more information about the full version of VIDZ PLAY.\n\nBest,');
+  location.href=`mailto:xavier.faltot@gmail.com?subject=${subject}&body=${body}`;
+});
+$('#backConsoleBtn').addEventListener('click',exitPreview);
+
+$('#fxToggleBtn').addEventListener('click',()=>{
+  fxEnabled=!fxEnabled;
+  $('#fxToggleBtn').textContent=fxEnabled?'FX ON':'FX OFF';
+  $('#fxToggleBtn').classList.toggle('primary',fxEnabled);
+
+  if(!fxEnabled){
+    currentFx='none';
+    currentBlend='source-over';
+    fxAmount=0;
+    pulseAmount=0;
+    $('#fxBadge').textContent='FX: OFF';
+    $('#whiteFlash').classList.remove('hit');
+  }else{
+    $('#fxBadge').textContent='FX: AUTO';
+    evolveEffects();
+  }
+});
+
+$('#doubleBtn').addEventListener('click',async()=>{
+  layout=layout==='single'?'double':'single';
+  $('#doubleBtn').textContent=layout==='double'?'SINGLE SCREEN':'DOUBLE SCREEN';
+  $('#fxBadge').textContent=layout==='double'?'2 EQUAL LOCKED SCREENS':'FX: AUTO';
+
+  if(layout==='double'){
+    doubleReplaceDeck='A';
+    if(A.paused){try{await A.play();}catch(e){}}
+    if(B.paused){try{await B.play();}catch(e){}}
+  }
+});
+$('#fullBtn').addEventListener('click',async()=>{
+  stage.classList.add('clean');
+  const fs=stage.requestFullscreen||stage.webkitRequestFullscreen;
+  if(fs){try{await fs.call(stage);}catch(e){}}
+});
+$('#screenTap').addEventListener('touchend',e=>{
+  const now=Date.now();
+  if(now-lastTap<320){
+    e.preventDefault();
+    leaveFullscreen();
+    lastTap=0;
+  } else lastTap=now;
+},{passive:false});
+$('#screenTap').addEventListener('dblclick',leaveFullscreen);
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement) stage.classList.remove('clean');
+});
+let lastOrientation=window.innerWidth>window.innerHeight?'landscape':'portrait';
+window.addEventListener('resize',()=>{
+  const now=window.innerWidth>window.innerHeight?'landscape':'portrait';
+  if(now!==lastOrientation){
+    lastOrientation=now;
+    setTimeout(()=>resizeCanvas(true),180);
+  }
+});
+window.addEventListener('orientationchange',()=>setTimeout(()=>resizeCanvas(true),250));
+</script>
+</body>
+</html>

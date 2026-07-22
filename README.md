@@ -77,19 +77,50 @@ When `index.html` is served from the Raspberry Pi local web server, it automatic
 
 ## Scan And Filter
 
-`SCAN` is the preparation tool:
+VIDZ PLAY LITE can now be used as separate blocks that can be chained:
+
+```text
+SCAN -> FILTER -> PLAY
+```
+
+Block definitions live in:
+
+```text
+blocks/
+```
+
+`SCAN` is the preparation block:
 
 ```bash
 python3 tools/vidz_scan_lite.py --video /path/to/videos --output media-index.json
 ```
 
-`FILTER` is in the Lite interface:
+`FILTER` is both a command-line block and an on-screen control.
+
+Command-line filter example:
+
+```bash
+python3 tools/vidz_filter_lite.py \
+  --input media-index.json \
+  --output media-index.filtered.json \
+  --energy high \
+  --sort energy \
+  --reverse
+```
+
+On-screen filters:
 
 ```text
 ALL / FAST / SLOW / DARK / BRIGHT / WIDE / VERTICAL / SHORT / LONG / LOW / MED / HIGH
 ```
 
 Filters use the scanner metadata when available. If no index exists, VIDZ PLAY LITE still works with the normal browser file picker and derives basic tags from filenames and video metadata.
+
+To play a filtered set, put the filtered JSON next to `index.html` as:
+
+```text
+media-index.json
+```
 
 ## GitHub Pages
 
@@ -112,7 +143,9 @@ index.html
 ```text
 index.html
 assets/vidz-play-lite-logo.png
+blocks/
 tools/vidz_scan_lite.py
+tools/vidz_filter_lite.py
 README.md
 LICENSE
 .gitignore

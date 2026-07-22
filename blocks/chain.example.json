@@ -1,0 +1,25 @@
+{
+  "name": "VIDZ PLAY LITE basic machine chain",
+  "blocks": [
+    {
+      "id": "scan",
+      "label": "01 / SCAN",
+      "command": "python3 tools/vidz_scan_lite.py --video /media/VIDZ_VIDEO --audio /media/VIDZ_AUDIO --output media-index.json --cache cache --video-url /media/video --audio-url /media/audio",
+      "output": "media-index.json"
+    },
+    {
+      "id": "filter",
+      "label": "02 / FILTER",
+      "command": "python3 tools/vidz_filter_lite.py --input media-index.json --output media-index.filtered.json --energy high --sort energy --reverse",
+      "input": "media-index.json",
+      "output": "media-index.filtered.json"
+    },
+    {
+      "id": "play",
+      "label": "03 / PLAY",
+      "command": "serve index.html with media-index.json next to it",
+      "input": "media-index.json",
+      "output": "HDMI"
+    }
+  ]
+}

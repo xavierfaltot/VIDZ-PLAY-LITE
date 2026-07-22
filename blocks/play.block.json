@@ -1,0 +1,8 @@
+{
+  "id": "play",
+  "label": "03 / PLAY",
+  "type": "video-output",
+  "input": ["media-index.json"],
+  "output": ["HDMI", "audio"],
+  "entry": "index.html"
+}

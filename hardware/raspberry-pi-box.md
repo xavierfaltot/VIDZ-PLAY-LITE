@@ -42,6 +42,12 @@ Bill of materials:
 hardware/bill-of-materials.md
 ```
 
+Assembly guide:
+
+```text
+hardware/assembly-guide.md
+```
+
 ## Storage
 
 The Raspberry Pi boots from its own system storage. The performance media should be removable.

@@ -51,6 +51,7 @@ Hardware blueprint:
 ```text
 hardware/raspberry-pi-box.md
 hardware/bill-of-materials.md
+hardware/assembly-guide.md
 interface/low-tech-multi-screen-prompt.md
 ```
 

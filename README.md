@@ -50,6 +50,7 @@ Hardware blueprint:
 
 ```text
 hardware/raspberry-pi-box.md
+interface/low-tech-multi-screen-prompt.md
 ```
 
 Machine I/O:

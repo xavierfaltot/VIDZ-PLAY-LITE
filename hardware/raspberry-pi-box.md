@@ -16,6 +16,26 @@ BLUETOOTH    -> optional wireless audio output
 AIRPLAY      -> optional network audio input
 ```
 
+## Interface Direction
+
+Do not design the box as an iPad-style touchscreen.
+
+Design it as a low-tech hardware instrument with multiple small screens:
+
+```text
+STATUS OLED
+SCAN OLED
+FILTR OLED
+AUDIO OLED
+MAIN HDMI VIDEO
+```
+
+Detailed interface prompt:
+
+```text
+interface/low-tech-multi-screen-prompt.md
+```
+
 ## Storage
 
 The Raspberry Pi boots from its own system storage. The performance media should be removable.

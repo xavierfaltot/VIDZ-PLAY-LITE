@@ -50,6 +50,7 @@ Hardware blueprint:
 
 ```text
 hardware/raspberry-pi-box.md
+hardware/bill-of-materials.md
 interface/low-tech-multi-screen-prompt.md
 ```
 

@@ -36,6 +36,12 @@ Detailed interface prompt:
 interface/low-tech-multi-screen-prompt.md
 ```
 
+Bill of materials:
+
+```text
+hardware/bill-of-materials.md
+```
+
 ## Storage
 
 The Raspberry Pi boots from its own system storage. The performance media should be removable.

@@ -8,11 +8,11 @@
       "output": "media-index.json"
     },
     {
-      "id": "filter",
-      "label": "02 / FILTER",
-      "command": "python3 tools/vidz_filter_lite.py --input media-index.json --output media-index.filtered.json --energy high --sort energy --reverse",
+      "id": "filtr",
+      "label": "02 / FILTR",
+      "command": "python3 tools/vidz_filtr_lite.py --input media-index.json --output media-index.filtr.json --energy high --sort energy --reverse",
       "input": "media-index.json",
-      "output": "media-index.filtered.json"
+      "output": "media-index.filtr.json"
     },
     {
       "id": "play",

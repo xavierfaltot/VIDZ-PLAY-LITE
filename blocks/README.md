@@ -3,7 +3,7 @@
 VIDZ PLAY LITE is organised as chainable blocks for machine use.
 
 ```text
-SCAN -> FILTER -> PLAY
+SCAN -> FILTR -> PLAY
 ```
 
 Each block has one job and passes a simple file contract to the next block.
@@ -45,7 +45,7 @@ Purpose:
 - estimate brightness, motion and energy
 - write a machine-readable media index
 
-## 02 / FILTER
+## 02 / FILTR
 
 Input:
 
@@ -56,17 +56,30 @@ media-index.json
 Output:
 
 ```text
-media-index.filtered.json
+media-index.filtr.json
+VIDZ_EXPORT/, optional
 ```
 
 Command examples:
 
 ```bash
-python3 tools/vidz_filter_lite.py --input media-index.json --output media-index.filtered.json --energy high
+python3 tools/vidz_filtr_lite.py --input media-index.json --output media-index.filtr.json --energy high
 ```
 
 ```bash
-python3 tools/vidz_filter_lite.py --input media-index.json --output media-index.filtered.json --motion fast --orientation wide --sort energy --reverse
+python3 tools/vidz_filtr_lite.py --input media-index.json --output media-index.filtr.json --motion fast --orientation wide --sort energy --reverse
+```
+
+Export card example:
+
+```bash
+python3 tools/vidz_filtr_lite.py \
+  --input media-index.json \
+  --set-name NIGHT_SET_01 \
+  --export-dir /media/VIDZ_EXPORT_CARD \
+  --copy-media \
+  --copy-thumbs \
+  --organise-by energy
 ```
 
 Purpose:
@@ -74,6 +87,8 @@ Purpose:
 - keep only the clips needed for the current set
 - filter by energy, motion, brightness, orientation, tag, folder or duration
 - sort by name, duration, energy or cuts
+- organise selected files onto an export card
+- write set indexes, logs and optional copied thumbnails/media
 - output a new player-ready index
 
 ## 03 / PLAY
@@ -87,7 +102,7 @@ media-index.json
 or:
 
 ```text
-media-index.filtered.json renamed/copied to media-index.json
+media-index.filtr.json renamed/copied to media-index.json
 ```
 
 Output:

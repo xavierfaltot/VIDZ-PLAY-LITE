@@ -1,9 +1,0 @@
-{
-  "id": "filter",
-  "label": "02 / FILTER",
-  "type": "media-selection",
-  "input": ["media-index.json"],
-  "output": ["media-index.filtered.json"],
-  "script": "tools/vidz_filter_lite.py",
-  "filters": ["energy", "motion", "brightness", "orientation", "tag", "folder", "duration", "search"]
-}

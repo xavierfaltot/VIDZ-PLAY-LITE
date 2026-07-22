@@ -87,12 +87,12 @@ The index stores file references, duration, size, orientation, brightness, motio
 
 When `index.html` is served from the Raspberry Pi local web server, it automatically reads `media-index.json` if present. The player then opens with the scanned library ready to filter and play.
 
-## Scan And Filter
+## Scan And Filtr
 
 VIDZ PLAY LITE can now be used as separate blocks that can be chained:
 
 ```text
-SCAN -> FILTER -> PLAY
+SCAN -> FILTR -> PLAY
 ```
 
 Block definitions live in:
@@ -107,17 +107,29 @@ blocks/
 python3 tools/vidz_scan_lite.py --video /path/to/videos --output media-index.json
 ```
 
-`FILTER` is both a command-line block and an on-screen control.
+`FILTR` is the organisation block. It filters, sorts, and can prepare an export card.
 
-Command-line filter example:
+Command-line filtr example:
 
 ```bash
-python3 tools/vidz_filter_lite.py \
+python3 tools/vidz_filtr_lite.py \
   --input media-index.json \
-  --output media-index.filtered.json \
+  --output media-index.filtr.json \
   --energy high \
   --sort energy \
   --reverse
+```
+
+Export card example:
+
+```bash
+python3 tools/vidz_filtr_lite.py \
+  --input media-index.json \
+  --set-name NIGHT_SET_01 \
+  --export-dir /media/VIDZ_EXPORT_CARD \
+  --copy-media \
+  --copy-thumbs \
+  --organise-by energy
 ```
 
 On-screen filters:
@@ -128,7 +140,7 @@ ALL / FAST / SLOW / DARK / BRIGHT / WIDE / VERTICAL / SHORT / LONG / LOW / MED /
 
 Filters use the scanner metadata when available. If no index exists, VIDZ PLAY LITE still works with the normal browser file picker and derives basic tags from filenames and video metadata.
 
-To play a filtered set, put the filtered JSON next to `index.html` as:
+To play a filtered set, put the FILTR JSON next to `index.html` as:
 
 ```text
 media-index.json
@@ -158,7 +170,7 @@ assets/vidz-play-lite-logo.png
 blocks/
 hardware/
 tools/vidz_scan_lite.py
-tools/vidz_filter_lite.py
+tools/vidz_filtr_lite.py
 README.md
 LICENSE
 .gitignore

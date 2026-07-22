@@ -39,7 +39,7 @@ It can receive:
 - sorted clips
 - filtered clip sets
 - `media-index.json`
-- `media-index.filtered.json`
+- `media-index.filtr.json`
 - thumbnails cache
 - logs
 - set presets
@@ -160,21 +160,20 @@ The physical box can use this chain:
 ```text
 MOUNT CARDS
 -> SCAN
--> FILTER
--> ORGANISE / EXPORT
+-> FILTR / ORGANISE / EXPORT
 -> PLAY
 ```
 
 Next block to build:
 
 ```text
-ORGANISE / EXPORT
+FILTR / ORGANISE / EXPORT
 ```
 
 Purpose:
 
 - read `media-index.json`
-- create filtered folders or set files
+- filter and create organised folders or set files
 - copy lightweight indexes to the export card
 - optionally copy selected media to the export card when requested
 

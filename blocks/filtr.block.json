@@ -1,0 +1,10 @@
+{
+  "id": "filtr",
+  "label": "02 / FILTR",
+  "type": "media-organisation",
+  "input": ["media-index.json"],
+  "output": ["media-index.filtr.json", "VIDZ_EXPORT"],
+  "script": "tools/vidz_filtr_lite.py",
+  "filters": ["energy", "motion", "brightness", "orientation", "tag", "folder", "duration", "search"],
+  "organise": ["flat", "energy", "motion", "brightness", "orientation", "folder"]
+}

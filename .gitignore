@@ -16,6 +16,10 @@ VIDZ IMPORTS/
 VIDEOS/
 MEDIA/
 EXPORTS/
+cache/
+media-index.json
 
 *.tmp
 *.swp
+__pycache__/
+*.pyc

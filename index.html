@@ -82,6 +82,43 @@ button,a,label { touch-action:manipulation; }
 }
 .video-count { margin-top:10px; color:#d3ff63; font-size:10px; font-weight:900; letter-spacing:1.1px; }
 
+.filter-strip{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:auto repeat(12,minmax(0,1fr));
+  gap:7px;
+  padding:10px;
+  border:1px solid #303139;
+  border-radius:18px;
+  background:linear-gradient(145deg,#141519,#08090b);
+  box-shadow:0 16px 30px #0008,inset 0 1px 0 #ffffff0a;
+}
+.filter-label{
+  display:grid;
+  place-items:center;
+  padding:0 8px;
+  color:#8f9199;
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:1px;
+}
+.filter-chip{
+  min-height:38px;
+  border-radius:12px;
+  border:1px solid #383943;
+  background:linear-gradient(#1c1d22,#090a0d);
+  color:#f4f1eb;
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:.7px;
+}
+.filter-chip.active{
+  border-color:var(--violet);
+  background:var(--violet);
+  color:#050506;
+  box-shadow:0 0 18px #985fff55;
+}
 
 .audio-row{
   display:grid;
@@ -292,6 +329,9 @@ button,a,label { touch-action:manipulation; }
   .logo-panel { padding:9px; }
   .video-title { font-size:22px; }
   .video-sub { font-size:9px; }
+  .filter-strip{grid-template-columns:repeat(3,1fr);gap:6px}
+  .filter-label{grid-column:1/-1;min-height:24px}
+  .filter-chip{min-height:34px;font-size:9px}
   .audio-row { grid-template-columns:4fr 1fr; gap:8px; }
   .mp3-slot { grid-template-columns:auto minmax(0,1fr) auto; min-height:82px; padding:12px 14px; }
   .mic-slot { min-height:82px; border-radius:16px; }
@@ -326,6 +366,22 @@ button,a,label { touch-action:manipulation; }
       </div>
     </label>
   </div>
+
+  <section class="filter-strip" aria-label="Video filters">
+    <div class="filter-label">FILTER</div>
+    <button class="filter-chip active" data-filter="all" type="button">ALL</button>
+    <button class="filter-chip" data-filter="fast" type="button">FAST</button>
+    <button class="filter-chip" data-filter="slow" type="button">SLOW</button>
+    <button class="filter-chip" data-filter="dark" type="button">DARK</button>
+    <button class="filter-chip" data-filter="bright" type="button">BRIGHT</button>
+    <button class="filter-chip" data-filter="wide" type="button">WIDE</button>
+    <button class="filter-chip" data-filter="vertical" type="button">VERTICAL</button>
+    <button class="filter-chip" data-filter="short" type="button">SHORT</button>
+    <button class="filter-chip" data-filter="long" type="button">LONG</button>
+    <button class="filter-chip" data-filter="low" type="button">LOW</button>
+    <button class="filter-chip" data-filter="medium" type="button">MED</button>
+    <button class="filter-chip" data-filter="high" type="button">HIGH</button>
+  </section>
 
   <div class="audio-row">
     <label class="mp3-slot">
@@ -406,6 +462,7 @@ const stage=$('#stage'), canvas=$('#mixCanvas'), ctx=canvas.getContext('2d',{alp
 
 let files=[], urls=[], order=[], used=new Set(), front=0, back=-1;
 let libraryMeta=[], activeTag=null, tagRunRemaining=0;
+let activeFilter='all';
 let nextAutoCutAt=0, lastSceneSignature=null, lastSceneCut=0;
 let sceneTimer=null, longHoldBias=1;
 let active=A, standby=B, activeIndex=-1, standbyIndex=-1;
@@ -427,6 +484,17 @@ const loopStates=new Map();
 let lastScratchAt=0;
 
 function haptic(ms=20){ if(navigator.vibrate) navigator.vibrate(ms); }
+function fileTypeFromName(name){
+  const ext=String(name||'').split('.').pop().toLowerCase();
+  const types={mp4:'video/mp4',m4v:'video/mp4',mov:'video/quicktime',webm:'video/webm',mkv:'video/x-matroska',avi:'video/x-msvideo'};
+  return types[ext]||'video/mp4';
+}
+function shortMediaName(path){
+  return decodeURIComponent(String(path||'').split('/').pop()||'media');
+}
+function isVideoFile(file){
+  return String(file.type||'').startsWith('video/') || /\.(mp4|m4v|mov|webm|mkv|avi)$/i.test(file.name||'');
+}
 
 function normalizeTagToken(token){
   return token
@@ -445,18 +513,77 @@ function tagsFromName(name){
   // Keep useful semantic-looking tokens, max 6.
   return [...new Set(tokens)].slice(0,6);
 }
+function uniqueTags(...groups){
+  return [...new Set(groups.flat().filter(Boolean).map(normalizeTagToken).filter(Boolean))];
+}
+function durationClass(duration){
+  if(!Number.isFinite(duration) || duration<=0) return '';
+  if(duration<30) return 'short';
+  if(duration>=180) return 'long';
+  return 'medium';
+}
+function orientationFromSize(width,height){
+  if(!width || !height) return '';
+  const ratio=width/height;
+  if(ratio>1.2) return 'wide';
+  if(ratio<.82) return 'vertical';
+  return 'square';
+}
 function buildLibraryMeta(){
-  libraryMeta=files.map((file,index)=>({
-    index,
-    name:file.name,
-    tags:tagsFromName(file.name),
-    duration:0,
-    internalCuts:0,
-    lastPlayedAt:0
-  }));
+  libraryMeta=files.map((file,index)=>{
+    const source=file.meta||{};
+    const duration=Number(source.duration)||0;
+    const orientation=source.orientation||orientationFromSize(source.width,source.height);
+    const brightness=source.brightness||'';
+    const motion=source.motion||'';
+    const energy=source.energy||'';
+    return {
+      index,
+      name:file.name,
+      tags:uniqueTags(tagsFromName(file.name),source.tags||[],[orientation,brightness,motion,energy,durationClass(duration)]),
+      duration,
+      width:source.width||0,
+      height:source.height||0,
+      orientation,
+      brightness,
+      motion,
+      energy,
+      folder:source.folder||'',
+      thumbnail:source.thumbnail||'',
+      internalCuts:Array.isArray(source.cuts)?source.cuts.length:Number(source.cuts)||Number(source.cutCount)||0,
+      lastPlayedAt:0
+    };
+  });
+  updateFilterUI();
 }
 function metaFor(index){
   return libraryMeta[index] || {index,tags:[],duration:0,internalCuts:0,lastPlayedAt:0};
+}
+function filterMatches(meta){
+  if(activeFilter==='all') return true;
+  if(activeFilter==='fast') return meta.motion==='fast' || meta.energy==='high' || meta.tags.includes('fast');
+  if(activeFilter==='slow') return meta.motion==='slow' || meta.energy==='low' || meta.tags.includes('slow');
+  if(activeFilter==='dark') return meta.brightness==='dark' || meta.tags.includes('dark');
+  if(activeFilter==='bright') return meta.brightness==='bright' || meta.tags.includes('bright');
+  if(activeFilter==='wide') return meta.orientation==='wide' || meta.tags.includes('wide');
+  if(activeFilter==='vertical') return meta.orientation==='vertical' || meta.tags.includes('vertical');
+  if(activeFilter==='short') return durationClass(meta.duration)==='short' || meta.tags.includes('short');
+  if(activeFilter==='long') return durationClass(meta.duration)==='long' || meta.tags.includes('long');
+  if(activeFilter==='low') return meta.energy==='low' || meta.tags.includes('low');
+  if(activeFilter==='medium') return meta.energy==='medium' || meta.tags.includes('medium');
+  if(activeFilter==='high') return meta.energy==='high' || meta.tags.includes('high');
+  return true;
+}
+function filteredIndices(){
+  return libraryMeta.filter(filterMatches).map(meta=>meta.index);
+}
+function updateFilterUI(){
+  const count=filteredIndices().length;
+  document.querySelectorAll('[data-filter]').forEach(button=>{
+    button.classList.toggle('active',button.dataset.filter===activeFilter);
+  });
+  $('#videoCount').textContent=files.length ? `${count}/${files.length} VIDEOS READY` : 'EMPTY';
+  $('#playBtn').disabled=!files.length || count===0;
 }
 function unusedIndices(){
   return order.filter(i=>!used.has(i));
@@ -468,6 +595,8 @@ function chooseUnusedByTag(tag,exclude=-1){
   return candidates[Math.floor(Math.random()*candidates.length)];
 }
 function chooseNextSmart(exclude=-1){
+  const available=filteredIndices();
+  if(!available.length) return -1;
   if(used.size>=order.length) resetCycle();
 
   // Continue a short thematic run sometimes.
@@ -485,6 +614,7 @@ function chooseNextSmart(exclude=-1){
   const pool=unusedIndices().filter(i=>i!==exclude);
   if(!pool.length){
     resetCycle();
+    if(!order.length) return -1;
     return chooseNextSmart(exclude);
   }
 
@@ -559,7 +689,7 @@ function shuffle(list){
   return a;
 }
 function resetCycle(){
-  order=shuffle([...Array(files.length).keys()]);
+  order=shuffle(filteredIndices());
   used.clear();
   front=0;
   back=order.length-1;
@@ -567,15 +697,21 @@ function resetCycle(){
   tagRunRemaining=0;
 }
 function takeFront(){
+  if(!filteredIndices().length) return -1;
   if(used.size>=order.length) resetCycle();
+  if(!order.length) return -1;
   while(front<order.length && used.has(order[front])) front++;
   if(front>=order.length) resetCycle();
+  if(!order.length) return -1;
   const i=order[front++]; used.add(i); return i;
 }
 function takeBack(){
+  if(!filteredIndices().length) return -1;
   if(used.size>=order.length) resetCycle();
+  if(!order.length) return -1;
   while(back>=0 && used.has(order[back])) back--;
   if(back<0){ resetCycle(); back=order.length-1; }
+  if(!order.length) return -1;
   const i=order[back--]; used.add(i); return i;
 }
 function savePosition(video){
@@ -603,6 +739,11 @@ function load(video,index){
       video.dataset.index=String(index);
       if(libraryMeta[index]){
         libraryMeta[index].duration=Number.isFinite(video.duration)?video.duration:0;
+        libraryMeta[index].width=video.videoWidth||libraryMeta[index].width||0;
+        libraryMeta[index].height=video.videoHeight||libraryMeta[index].height||0;
+        libraryMeta[index].orientation=libraryMeta[index].orientation||orientationFromSize(video.videoWidth,video.videoHeight);
+        libraryMeta[index].tags=uniqueTags(libraryMeta[index].tags,[libraryMeta[index].orientation,durationClass(libraryMeta[index].duration)]);
+        updateFilterUI();
       }
       resolve();
     };
@@ -806,6 +947,8 @@ function schedule(){
   if(Math.random()<.18)maybeCreateLoop(layout==='double'?(Math.random()<.5?A:B):active);
   clearTimeout(timer);
 
+  if(filteredIndices().length<2) return;
+
   const currentIndex=Number(active.dataset.index||0);
   const hold=computeHoldMs(currentIndex,active);
   nextAutoCutAt=performance.now()+hold;
@@ -821,6 +964,10 @@ async function mixNext(){
 
     const otherIndex=Number((target===A?B:A).dataset.index||-1);
     const idx=chooseNextSmart(otherIndex);
+    if(idx<0){
+      switching=false;
+      return;
+    }
     evolveEffects();
     await load(target,idx);
     try{await target.play();}catch(e){}
@@ -836,6 +983,10 @@ async function mixNext(){
 
   savePosition(active);
   const idx=chooseNextSmart(Number(active.dataset.index||-1));
+  if(idx<0){
+    switching=false;
+    return;
+  }
   evolveEffects();
   standbyIndex=idx;
   await load(standby,idx);
@@ -937,7 +1088,7 @@ async function releaseWakeLock(){
   wakeLock=null;
 }
 async function start(){
-  if(!files.length) return;
+  if(!files.length || !filteredIndices().length) return;
   haptic(35);
   stage.classList.add('show');
   stage.classList.remove('clean');
@@ -946,14 +1097,16 @@ async function start(){
 
   resetCycle();
   active=A; standby=B;
-  activeIndex=order[0];
-  standbyIndex=files.length>1?order[order.length-1]:activeIndex;
+  activeIndex=takeFront();
+  if(activeIndex<0) return;
+  standbyIndex=takeBack();
+  if(standbyIndex<0 || standbyIndex===activeIndex) standbyIndex=activeIndex;
   used.add(activeIndex);
-  used.add(standbyIndex);
+  if(standbyIndex!==activeIndex) used.add(standbyIndex);
   await load(active,activeIndex);
-  if(files.length>1) await load(standby,standbyIndex);
+  if(standbyIndex!==activeIndex) await load(standby,standbyIndex);
   try{await active.play();}catch(e){}
-  if(files.length>1){
+  if(standbyIndex!==activeIndex){
     try{await standby.play();}catch(e){}
   }
 
@@ -984,17 +1137,27 @@ async function leaveFullscreen(){
 }
 
 videosInput.addEventListener('change',()=>{
-  files=[...videosInput.files].filter(f=>f.type.startsWith('video/'));
-  urls.forEach(URL.revokeObjectURL);
+  files=[...videosInput.files].filter(isVideoFile);
+  urls.forEach(url=>{ if(String(url).startsWith('blob:')) URL.revokeObjectURL(url); });
   urls=files.map(f=>URL.createObjectURL(f));
   positions.clear();
   completedVideos.clear();
   editPoints.clear();
   loopStates.clear();
   buildLibraryMeta();
-  $('#videoCount').textContent=files.length?`${files.length} VIDEOS READY`:'EMPTY';
-  $('#playBtn').disabled=!files.length;
+  resetCycle();
+  updateFilterUI();
   haptic(25);
+});
+document.querySelectorAll('[data-filter]').forEach(button=>{
+  button.addEventListener('click',()=>{
+    activeFilter=button.dataset.filter||'all';
+    positions.clear();
+    completedVideos.clear();
+    resetCycle();
+    updateFilterUI();
+    haptic(15);
+  });
 });
 musicInput.addEventListener('change',()=>{
   if(audioUrl) URL.revokeObjectURL(audioUrl);
@@ -1007,6 +1170,62 @@ musicInput.addEventListener('change',()=>{
   }
 });
 $('#playBtn').addEventListener('click',start);
+
+function normaliseIndexedVideo(item,index){
+  const source=item||{};
+  const path=source.url||source.path||source.file||'';
+  const name=source.name||shortMediaName(path)||`video-${index+1}.mp4`;
+  const tags=uniqueTags(source.tags||[],[source.energy,source.motion,source.brightness,source.orientation]);
+  return {
+    file:{
+      name,
+      type:source.type||fileTypeFromName(name),
+      meta:{
+        ...source,
+        name,
+        tags,
+        cuts:Array.isArray(source.cuts)?source.cuts.length:source.cuts
+      }
+    },
+    url:path
+  };
+}
+function loadIndexedMediaIndex(data){
+  const items=Array.isArray(data?.videos)?data.videos:[];
+  if(!items.length) return;
+
+  urls.forEach(url=>{ if(String(url).startsWith('blob:')) URL.revokeObjectURL(url); });
+  const indexed=items.map(normaliseIndexedVideo).filter(item=>item.url);
+  files=indexed.map(item=>item.file);
+  urls=indexed.map(item=>item.url);
+  positions.clear();
+  completedVideos.clear();
+  editPoints.clear();
+  loopStates.clear();
+  buildLibraryMeta();
+  resetCycle();
+  updateFilterUI();
+
+  const audioItem=Array.isArray(data?.audio)?data.audio[0]:null;
+  if(audioItem){
+    const source=audioItem.url||audioItem.path||audioItem.file;
+    if(source){
+      if(audioUrl) URL.revokeObjectURL(audioUrl);
+      audioUrl=null;
+      audio.src=source;
+      $('#audioStatus').textContent=audioItem.name||shortMediaName(source);
+    }
+  }
+}
+async function loadMachineIndex(){
+  try{
+    const response=await fetch('./media-index.json',{cache:'no-store'});
+    if(!response.ok) return;
+    const data=await response.json();
+    loadIndexedMediaIndex(data);
+  }catch(e){}
+}
+loadMachineIndex();
 
 async function stopMic(){
   if(micRAF)cancelAnimationFrame(micRAF);

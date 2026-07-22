@@ -13,12 +13,14 @@ The full version is available on demand.
 ## Features
 
 - Local video folder import
+- Optional machine media index for Raspberry Pi / kiosk mode
 - Optional local audio file
 - Optional microphone-reactive mode
 - Fullscreen video stage
 - Two hidden video decks for continuous playback
 - Automatic clip switching
 - Smart visual mixing and FX
+- On-screen filters: ALL, FAST, SLOW, DARK, BRIGHT, WIDE, VERTICAL, SHORT, LONG, LOW, MED, HIGH
 - Scene/energy-aware timing logic
 - Local-only playback through the browser
 - Mobile/touch-oriented interface
@@ -39,6 +41,55 @@ Then:
 4. Press the central play control.
 
 For best results, use Chrome or another Chromium browser because folder import uses browser file APIs.
+
+## Raspberry Pi / Machine Mode
+
+VIDZ PLAY LITE can also load a prepared `media-index.json` at startup. This is the recommended mode for a physical box with removable media cards.
+
+Install `ffmpeg` on the Raspberry Pi:
+
+```bash
+sudo apt install ffmpeg
+```
+
+Scan the video and audio cards:
+
+```bash
+python3 tools/vidz_scan_lite.py \
+  --video /media/VIDZ_VIDEO \
+  --audio /media/VIDZ_AUDIO \
+  --output media-index.json \
+  --cache cache \
+  --video-url /media/video \
+  --audio-url /media/audio
+```
+
+The scanner creates:
+
+```text
+media-index.json
+cache/thumbs/
+```
+
+The index stores file references, duration, size, orientation, brightness, motion, energy, cut points and thumbnail paths. It does not copy large video/audio files.
+
+When `index.html` is served from the Raspberry Pi local web server, it automatically reads `media-index.json` if present. The player then opens with the scanned library ready to filter and play.
+
+## Scan And Filter
+
+`SCAN` is the preparation tool:
+
+```bash
+python3 tools/vidz_scan_lite.py --video /path/to/videos --output media-index.json
+```
+
+`FILTER` is in the Lite interface:
+
+```text
+ALL / FAST / SLOW / DARK / BRIGHT / WIDE / VERTICAL / SHORT / LONG / LOW / MED / HIGH
+```
+
+Filters use the scanner metadata when available. If no index exists, VIDZ PLAY LITE still works with the normal browser file picker and derives basic tags from filenames and video metadata.
 
 ## GitHub Pages
 
@@ -61,6 +112,7 @@ index.html
 ```text
 index.html
 assets/vidz-play-lite-logo.png
+tools/vidz_scan_lite.py
 README.md
 LICENSE
 .gitignore

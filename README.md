@@ -46,6 +46,18 @@ For best results, use Chrome or another Chromium browser because folder import u
 
 VIDZ PLAY LITE can also load a prepared `media-index.json` at startup. This is the recommended mode for a physical box with removable media cards.
 
+Hardware blueprint:
+
+```text
+hardware/raspberry-pi-box.md
+```
+
+Machine I/O:
+
+```text
+VIDEO CARD / AUDIO CARD / EXPORT CARD / MIC / LINE IN / HDMI OUT / AUDIO OUT
+```
+
 Install `ffmpeg` on the Raspberry Pi:
 
 ```bash
@@ -144,6 +156,7 @@ index.html
 index.html
 assets/vidz-play-lite-logo.png
 blocks/
+hardware/
 tools/vidz_scan_lite.py
 tools/vidz_filter_lite.py
 README.md
